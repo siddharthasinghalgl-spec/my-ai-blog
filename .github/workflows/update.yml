@@ -1,0 +1,28 @@
+name: AI Auto Post Update
+on:
+  schedule:
+    - cron: '0 0 * * *' # প্রতিদিন রাত ১২টায় অটোমেটিক পোস্ট হবে
+  workflow_dispatch:
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install Dependencies
+        run: pip install google-generativeai
+      - name: Run AI Agent
+        run: python app.py
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      - name: Save & Push Data
+        run: |
+          git config --global user.name "AuraAI-Bot"
+          git config --global user.email "bot@auraai.com"
+          git add database.json
+          git commit -m "Auto Update by Gemini AI"
+          git push
+          
